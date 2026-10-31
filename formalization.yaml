@@ -1,0 +1,549 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Fluctuation bounds for first-passage percolation"
+  description: >-
+    A Lean 4 / Mathlib formalization of two papers of S. Armstrong and A.
+    Bou-Rabee on the fluctuations of passage times in first-passage
+    percolation. "Curvature and variance in lattice first-passage percolation":
+    for independent, identically distributed edge weights on Z^d, d >= 2, whose
+    law nu has an exponential moment and nu({0}) below the critical probability
+    of bond percolation (Assumption (W)), and for constants delta in (0, 1], r >
+    0, Lambda >= 0 and lambda > 0, there are epsilon > 0 and C such that E
+    exp(|T(0, x) - mu(x)| / (C |x|^((1 - epsilon)/2))) <= 2 for every unit
+    vector xi in R^d, rational or not, at which the time constant mu has a
+    quadratic expansion on the orthogonal hyperplane with these constants
+    (Assumption (Curv): a linear term, a quadratic form at least lambda |h|^2,
+    and a remainder at most Lambda |h|^(2 + delta) for |h| <= r), and every x in
+    Z^d other than 0 within distance |x|^(3/4) of the ray through xi; epsilon
+    and C do not depend on the direction (Theorem 1.1). The repository also
+    proves the variance bound that follows, Var T(0, x) <= 2 C^2 |x|^(1 -
+    epsilon), and Var T(0, floor(n xi)) <= n^(1 - epsilon) for every
+    sufficiently large integer n, uniformly in the direction, the floor taken
+    coordinatewise. "Fluctuation bounds for
+    rotationally invariant first-passage percolation": for the random density
+    psi(chi * W) of Gaussian white noise W on R^d, d >= 2, with chi smooth,
+    radial and supported in the closed unit ball and psi continuous with values
+    between two positive constants, the passage time T over rectifiable curves
+    has a time constant mu = lim t^(-1) E T(0, t e_1), and there are epsilon > 0
+    and C such that E exp(|T(0, x) - mu |x|| / (C |x|^((1 - epsilon)/2))) <= 2
+    for every point x with |x| >= 1 (Theorem 1.1); the same holds for every
+    density of white noise or of a homogeneous Poisson process that is jointly
+    measurable, determined by the noise in the closed unit ball around each
+    point, bounded between two positive constants and equivariant under
+    rotations and translations (Assumption A, Theorem 1.2). The repository also
+    proves the variance bounds that follow, Var T(0, t e_1) <= t^(1 - epsilon)
+    for every sufficiently large t and Var T(0, x) <= |x|^(1 - epsilon) for
+    every point x with |x| sufficiently large. Every result of the literature
+    that the proofs cite is stated and proved in the repository.
+  authors:
+    - "Scott Armstrong"
+    - "Ahmed Bou-Rabee"
+  responsible_maintainers:
+    - "Scott Armstrong"
+    - "Ahmed Bou-Rabee"
+  affiliations:
+    - "Scott Armstrong: CNRS & Laboratoire Jacques-Louis Lions, Sorbonne Université and Courant Institute of Mathematical Sciences, New York University"
+    - "Ahmed Bou-Rabee: Department of Mathematics, University of Pennsylvania"
+  license: "Apache-2.0"
+  funding:
+    - "Scott Armstrong was supported by the European Research Council (ERC) under the European Union's Horizon Europe research and innovation programme, grant agreement No. 101200828."
+
+classification:
+  arxiv: ["math.PR"]
+  msc2020: ["60K35", "82B43", "60K37"]
+
+sources:
+  - title: "Curvature and variance in lattice first-passage percolation"
+    authors:
+      - "Scott Armstrong"
+      - "Ahmed Bou-Rabee"
+    type: "article"
+    location: "papers/CurvatureVariance.pdf (the version of October 31, 2026; 18 pages): Theorem 1.1, and every result of the literature its proof cites"
+    relationship: "formalizes"
+    note: >-
+      Theorem 1.1 is formalized with the paper's hypotheses
+      (lintegral_exp_passageTime_le): for the constants delta, r, Lambda and
+      lambda of (Curv) (AssumptionCWith, with M for Lambda and c for lambda) there
+      are epsilon and C, and then the exponential-moment bound holds at every unit
+      vector xi at which (Curv) holds with these constants and at every nonzero
+      lattice point x such that some point beta xi with beta >= 0 lies within
+      distance |x|^(3/4) of x; the hypotheses are (W) and (Curv) and nothing else.
+      The constant C is a positive real number; the expectation of the exponential
+      is a Lebesgue integral with values in [0, infinity], so that the bound also
+      asserts that it is finite; and the theorem also concludes that the passage
+      time is a random variable (almost everywhere measurable). The variance bound
+      stated after Theorem 1.1 is proved with the same epsilon and C, and so is
+      its corollary at the lattice points floor(n xi), the floor taken
+      coordinatewise: Var T(0, floor(n xi)) <= n^(1 - epsilon) for n >= n_0, with
+      epsilon and n_0 chosen before the unit vector xi
+      (evariance_passageTime_floorVertex_le_uniform). The repository also proves
+      a statement that the paper does not make and that is not a corollary of
+      Theorem 1.1: the same bound at one nonzero xi, under an expansion of the
+      time constant on a complementary hyperplane H with constants of its own
+      (AssumptionCAt), with epsilon and n_0 depending on the direction
+      (evariance_passageTime_floorVertex_le). The lattice is Z^d = Z x
+      Z^m with d = m + 1; this product is only an indexing of the coordinates, and
+      no coordinate is distinguished in the statements. The vector e_1 appears
+      only in three cited results, [ADH, Theorems 2.1, 2.5 and 2.6], which are
+      stated at e_1 as their source states them. The weights are a configuration
+      law P under which the edge weights are independent with law F, the paper's
+      nu (IsIIDWeights); the time constant is a norm mu on R^d with T(0, nx)/n ->
+      mu(x) almost surely for every x in Z^d (IsTimeConstant). Both notions are
+      proved to exist under (W) and to be unique, so quantifying over them is the
+      paper's statement. The variance is Mathlib's extended variance evariance,
+      with values in [0, infinity], so that a variance bound also asserts that the
+      variance is finite. The critical probability is p_c(d) = sup {p : theta(p) =
+      0} for bond percolation. The results the proof uses from [ADH], [BR], [BLM]
+      and [AKM], directly or through the continuum paper, Kesten's bound on paths
+      of small passage time [Kes86, Proposition 5.8], stated under (W) as the paper
+      uses it, and the sharpness of the phase transition [DCT, Theorem 1.1], by
+      which p_T(d) = p_c(d) and Kesten's bound holds under (W), are stated as the
+      paper uses them and proved. Every deviation of the Lean
+      statements from the printed ones, and every difference of route between the
+      formal and the printed proofs, is listed in docs/FORMALIZATION-NOTES.md.
+    license: "© the authors, all rights reserved; included as papers/CurvatureVariance.pdf for reference, not covered by the Apache-2.0 license of the code"
+    author_endorsement: "participated"
+  - title: "Fluctuation bounds for rotationally invariant first-passage percolation"
+    authors:
+      - "Scott Armstrong"
+      - "Ahmed Bou-Rabee"
+    type: "article"
+    location: "papers/IsotropicVariance.pdf (the version submitted to arXiv on October 30, 2026; 19 pages): Theorem 1.1, Theorem 1.2 for white noise and for the Poisson process, and every result of the literature their proofs cite"
+    relationship: "formalizes"
+    note: >-
+      Theorems 1.1 and 1.2 are formalized with the paper's hypotheses, on a
+      standard Borel probability space carrying the noise
+      (lintegral_exp_passageTime_le, and its two forms for Theorem 1.2, one for
+      each noise). Assumption A is formalized as printed (IsLocalDensity): the
+      value of the density at x is determined by the restriction of the noise to
+      the closed unit ball around x, and the density is equivariant under the
+      proper rigid motions, the compositions of a rotation and a translation.
+      White noise is a measurable random distribution whose value at every test
+      function is a centered Gaussian with variance the squared L^2 norm of the
+      test function; the Poisson process of intensity lam > 0 is a measurable
+      random locally finite counting measure with independent Poisson counts on
+      disjoint bounded Borel sets. The passage time is the infimum of the cost
+      over rectifiable curves. Each main theorem asserts that the time constant
+      mu = lim t^(-1) E T(0, t e_1) exists and bounds the exponential moment with
+      this mu; the constant C is a positive real number; the expectation of the
+      exponential is a Lebesgue integral with values in [0, infinity], so that
+      the bound also asserts that it is finite; and the theorem also concludes
+      that the passage time is a random variable (almost everywhere measurable).
+      The repository also proves the variance bounds that follow from Theorems
+      1.1 and 1.2, Var T(0, t e_1) <= t^(1 - epsilon) for large t and Var T(0, x)
+      <= |x|^(1 - epsilon) for large |x|, with epsilon and the threshold chosen
+      before the point (variance_passageTime_le, variance_passageTime_le_norm and
+      their forms for Theorem 1.2), for Mathlib's extended variance. The results
+      the proofs cite from [AKM], [BLM], [HN] and [BR] are stated as the paper
+      uses them and proved. Every deviation of the Lean statements from the
+      printed ones, and every difference of route between the formal and the
+      printed proofs, is listed in docs/FORMALIZATION-NOTES.md.
+    license: "© the authors, all rights reserved; included as papers/IsotropicVariance.pdf for reference, not covered by the Apache-2.0 license of the code"
+    author_endorsement: "participated"
+  - title: "Rotationally invariant first passage percolation: Concentration and scaling relations"
+    authors:
+      - "Riddhipratim Basu"
+      - "Vladas Sidoravicius"
+      - "Allan Sly"
+    type: "article"
+    id: "arXiv:2312.14143"
+    location: "https://arxiv.org/abs/2312.14143"
+    relationship: "background"
+    note: >-
+      Earlier work of Basu, Sidoravicius and Sly on rotationally invariant
+      first-passage percolation. Not formalized here; neither paper uses a
+      result of it as an input.
+    license: "unknown"
+  - title: "Rotationally invariant first passage percolation: Breaking the n/log n variance barrier"
+    authors:
+      - "Riddhipratim Basu"
+      - "Vladas Sidoravicius"
+      - "Allan Sly"
+    type: "article"
+    id: "arXiv:2604.01214"
+    location: "https://arxiv.org/abs/2604.01214"
+    relationship: "background"
+    note: >-
+      Cited by both papers. The continuum paper uses its framework of slabs
+      whose passage times are computed from independent noise. Not formalized
+      here; neither paper uses a result of it as an input.
+    license: "unknown"
+
+related_formalizations: []
+
+status:
+  scope: >-
+    Complete for the main results of both papers. The main theorems, the
+    exponential-moment bounds of Theorem 1.1 of the lattice paper and of Theorems
+    1.1 and 1.2 of the continuum paper (for white noise and for the Poisson
+    process), are proved from the papers' hypotheses alone, together with the
+    variance bounds that follow from them: for the lattice paper, the bound
+    stated after Theorem 1.1 and the bound at the points floor(n xi), uniformly
+    in the direction; for the continuum paper, the bounds at the points t e_1
+    and at every point x with |x| large. For the lattice, the repository also
+    proves the bound at the points floor(n xi) at one direction, under a
+    hypothesis of its own that the paper does not state. Every result of the
+    literature that the proofs use has its own statement and proof in the
+    repository (15 statements for the lattice paper, among them the sharpness of
+    the phase transition behind Kesten's bound, and 8 for the continuum paper),
+    and the notions the main theorems use (independent weights, the time
+    constant, white noise, the Poisson process) are proved to exist. Each main
+    theorem is restated with Mathlib alone in a comparator challenge under
+    Audit/.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: ["propext", "Classical.choice", "Quot.sound"]
+  main_results:
+    - declaration: "CurvatureVariance.lintegral_exp_passageTime_le"
+      file: "CurvatureVariance/Statements/Main/LintegralExpPassageTimeLe.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/LatticeVariance/comparator.json"
+      literature_dependencies: []
+    - declaration: "CurvatureVariance.evariance_passageTime_floorVertex_le_uniform"
+      file: "CurvatureVariance/Statements/Main/EvariancePassageTimeFloorVertexLeUniform.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/LatticeVariance/comparator.json"
+      literature_dependencies: []
+    - declaration: "CurvatureVariance.evariance_passageTime_floorVertex_le"
+      file: "CurvatureVariance/Statements/Main/EvariancePassageTimeFloorVertexLe.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      literature_dependencies: []
+    - declaration: "IsotropicVariance.lintegral_exp_passageTime_le"
+      file: "IsotropicVariance/Statements/Main/LintegralExpPassageTimeLe.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/IsotropicMetric/comparator.json"
+      literature_dependencies: []
+    - declaration: "IsotropicVariance.lintegral_exp_passageTime_le_of_isWhiteNoise"
+      file: "IsotropicVariance/Statements/Main/LintegralExpPassageTimeLeOfIsWhiteNoise.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/WhiteNoiseGeneral/comparator.json"
+      literature_dependencies: []
+    - declaration: "IsotropicVariance.lintegral_exp_passageTime_le_of_isPoissonProcess"
+      file: "IsotropicVariance/Statements/Main/LintegralExpPassageTimeLeOfIsPoissonProcess.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/PoissonGeneral/comparator.json"
+      literature_dependencies: []
+    - declaration: "IsotropicVariance.variance_passageTime_le"
+      file: "IsotropicVariance/Statements/Main/VariancePassageTimeLe.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/IsotropicMetric/comparator.json"
+      literature_dependencies: []
+    - declaration: "IsotropicVariance.variance_passageTime_le_norm"
+      file: "IsotropicVariance/Statements/Main/VariancePassageTimeLeNorm.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/IsotropicMetric/comparator.json"
+      literature_dependencies: []
+    - declaration: "IsotropicVariance.variance_passageTime_le_of_isWhiteNoise"
+      file: "IsotropicVariance/Statements/Main/VariancePassageTimeLeOfIsWhiteNoise.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/WhiteNoiseGeneral/comparator.json"
+      literature_dependencies: []
+    - declaration: "IsotropicVariance.variance_passageTime_le_norm_of_isWhiteNoise"
+      file: "IsotropicVariance/Statements/Main/VariancePassageTimeLeNormOfIsWhiteNoise.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/WhiteNoiseGeneral/comparator.json"
+      literature_dependencies: []
+    - declaration: "IsotropicVariance.variance_passageTime_le_of_isPoissonProcess"
+      file: "IsotropicVariance/Statements/Main/VariancePassageTimeLeOfIsPoissonProcess.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/PoissonGeneral/comparator.json"
+      literature_dependencies: []
+    - declaration: "IsotropicVariance.variance_passageTime_le_norm_of_isPoissonProcess"
+      file: "IsotropicVariance/Statements/Main/VariancePassageTimeLeNormOfIsPoissonProcess.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/PoissonGeneral/comparator.json"
+      literature_dependencies: []
+    - declaration: "LatticeVariance.lintegral_exp_passageTime_le"
+      file: "Audit/LatticeVariance/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/LatticeVariance/comparator.json"
+      literature_dependencies: []
+    - declaration: "LatticeVariance.variance_passageTime_floorVertex_le_uniform"
+      file: "Audit/LatticeVariance/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/LatticeVariance/comparator.json"
+      literature_dependencies: []
+    - declaration: "IsotropicMetric.lintegral_exp_passageTime_le"
+      file: "Audit/IsotropicMetric/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/IsotropicMetric/comparator.json"
+      literature_dependencies: []
+    - declaration: "IsotropicMetric.variance_passageTime_le"
+      file: "Audit/IsotropicMetric/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/IsotropicMetric/comparator.json"
+      literature_dependencies: []
+    - declaration: "IsotropicMetric.variance_passageTime_le_norm"
+      file: "Audit/IsotropicMetric/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/IsotropicMetric/comparator.json"
+      literature_dependencies: []
+    - declaration: "WhiteNoiseGeneral.lintegral_exp_passageTime_le_of_isWhiteNoise"
+      file: "Audit/WhiteNoiseGeneral/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/WhiteNoiseGeneral/comparator.json"
+      literature_dependencies: []
+    - declaration: "WhiteNoiseGeneral.variance_passageTime_le_of_isWhiteNoise"
+      file: "Audit/WhiteNoiseGeneral/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/WhiteNoiseGeneral/comparator.json"
+      literature_dependencies: []
+    - declaration: "WhiteNoiseGeneral.variance_passageTime_le_norm_of_isWhiteNoise"
+      file: "Audit/WhiteNoiseGeneral/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/WhiteNoiseGeneral/comparator.json"
+      literature_dependencies: []
+    - declaration: "PoissonGeneral.lintegral_exp_passageTime_le_of_isPoissonProcess"
+      file: "Audit/PoissonGeneral/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/PoissonGeneral/comparator.json"
+      literature_dependencies: []
+    - declaration: "PoissonGeneral.variance_passageTime_le_of_isPoissonProcess"
+      file: "Audit/PoissonGeneral/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/PoissonGeneral/comparator.json"
+      literature_dependencies: []
+    - declaration: "PoissonGeneral.variance_passageTime_le_norm_of_isPoissonProcess"
+      file: "Audit/PoissonGeneral/Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "Audit/PoissonGeneral/comparator.json"
+      literature_dependencies: []
+
+automation:
+  methods:
+    - method: "agent"
+      models:
+        - "claude-opus-5-5"
+        - "gpt-6.1-sol"
+      framework: >-
+        Claude Code (Claude Opus 5.5) and Codex (GPT-6.1 Sol), directed by
+        the authors.
+      tool_setup: >-
+        Lean 4 and Mathlib v4.35.0-rc2 (commit
+        065356127b1dc0016f66b7283ce0ce2c4055aa55). The exact Lean statements of the main
+        theorems, of the cited results and of the definitions they use were
+        written first, checked against the papers and their sources by an
+        agent that did not write them, and kept fixed while their proofs were
+        developed; each completed proof of such a statement received a
+        separate check. Verification uses full builds, axiom checks, and the
+        Mathlib-only comparator challenges with Lean's comparator and the
+        independent kernel checkers bundled with the toolchain.
+      cost:
+        wall_time: "about six days of Lean development for these libraries (2026-10-26 to 2026-10-31), reusing supporting Lean code from the authors' earlier unpublished formalization work on related arguments"
+        spend_usd: "not separately tracked (subscription-based usage)"
+        hardware: "one shared 16-core / 124 GB RAM Linux machine"
+      prompting_notes: >-
+        The authors provided the papers and directed the development. Claude
+        Opus 5.5 coordinated the work; the Lean code was written by Claude
+        Opus 5.5 and GPT-6.1 Sol agents.
+  spend_usd: "not separately tracked (subscription-based usage)"
+  notes: >-
+    All Lean code was written by the listed models under the direction of the
+    authors. Every proof is checked by the Lean kernel; the libraries contain
+    no sorry and no custom axiom. The comparator challenges in Audit/ each
+    contain one intentional statement-level sorry per theorem, filled by the
+    corresponding solution.
+
+fidelity:
+  divergences: >-
+    Lattice paper: Theorem 1.1 has exactly the hypotheses (W) and (Curv), with
+    the constants of (Curv) quantified before epsilon and C, and the unit
+    direction and the point after them, as in the paper; the Lean writes M and c
+    for the paper's Lambda and lambda; "within distance |x|^(3/4) of the ray" is
+    the existence of a point beta xi with beta >= 0 at that distance from x,
+    which is the same condition since the ray is closed; the constant C is a
+    positive real number; the expectation of the exponential is a Lebesgue
+    integral with values in [0, infinity]; the theorem also concludes that the
+    passage time is almost everywhere measurable; the independent weights and
+    the time constant enter as predicates on the law of the configuration and on
+    a norm, both proved to exist and to be unique; the variance bounds that
+    follow are also proved, for the extended variance. Continuum paper: the
+    noise lives on a standard Borel probability space; Theorem 1.2 is stated as
+    two theorems, one for each noise; the time constant enters by its defining
+    limit, which each main theorem asserts to exist; the constant C is a positive
+    real number; the expectation of the exponential is a Lebesgue integral with
+    values in [0, infinity]; the main theorems also conclude that the passage
+    time is almost everywhere measurable; the variance bounds that follow are
+    also proved, at the points t e_1 and at every point x with |x| large. Cited
+    results are formalized in the form the papers use, some specialized to the
+    papers' hypotheses, and some with explicit constants where the source
+    computes an optimal one that the papers do not use. Every divergence, and
+    every difference of route between the formal and the printed proofs, is
+    listed in docs/FORMALIZATION-NOTES.md.
+
+review:
+  status: "author-approved-statements"
+  reviewers:
+    - "Scott Armstrong"
+  notes: >-
+    Lean checks each proof against its formal statement. The statements of
+    the main theorems, of the cited results and of the definitions they use
+    were checked against the papers and the cited sources by agents that did
+    not write them, and approved by the authors; the comparator declarations
+    are checked mechanically. This is not external peer review.
+
+alignment:
+  namespace: "CurvatureVariance, IsotropicVariance"
+  statements:
+    - source: "Curvature and variance in lattice first-passage percolation, Theorem 1.1"
+      lean: "CurvatureVariance.lintegral_exp_passageTime_le"
+      module: "CurvatureVariance.Statements.Main.LintegralExpPassageTimeLe"
+      status: "proved"
+      note: "Assumption (W); for the constants delta, r, Lambda, lambda of (Curv) there are epsilon and C with E exp(|T(0, x) - mu(x)| / (C |x|^((1 - epsilon)/2))) <= 2 at every unit vector xi satisfying (Curv) with these constants and every nonzero x in Z^d within distance |x|^(3/4) of the ray through xi."
+    - source: "Curvature and variance in lattice first-passage percolation, Assumption (Curv) with the constants delta, r, Lambda, lambda"
+      lean: "CurvatureVariance.AssumptionCWith"
+      module: "CurvatureVariance.Statements.Curvature.AssumptionCWith"
+      status: "defined"
+      note: "On the orthogonal hyperplane (span {xi})ᗮ: a linear functional and a quadratic form q with q h >= c |h|^2 (c is the paper's lambda), and |mu(xi + h) - mu(xi) - l(h) - q(h)| <= M |h|^(2 + delta) for |h| <= r (M is the paper's Lambda)."
+    - source: "Curvature and variance in lattice first-passage percolation, the variance bound after Theorem 1.1"
+      lean: "CurvatureVariance.Paper.Closing.variance_passageTime_le"
+      module: "CurvatureVariance.Paper.Closing.Main"
+      status: "proved"
+      note: "The conclusion of Theorem 1.1 together with Var T(0, x) <= 2 C^2 |x|^(1 - epsilon), for the same epsilon and C."
+    - source: "Curvature and variance in lattice first-passage percolation, the variance bound at the points floor(n xi), uniform in the direction"
+      lean: "CurvatureVariance.evariance_passageTime_floorVertex_le_uniform"
+      module: "CurvatureVariance.Statements.Main.EvariancePassageTimeFloorVertexLeUniform"
+      status: "proved"
+      note: "Assumption (W); for the constants delta, r, Lambda, lambda of (Curv) there are epsilon and n_0 with Var T(0, floor(n xi)) <= n^(1 - epsilon) for n >= n_0 at every unit vector xi satisfying (Curv) with these constants; a consequence of the variance bound after Theorem 1.1."
+    - source: "Not in the paper: a result of the formalization, at one direction of the lattice paper's setting; not a corollary of Theorem 1.1"
+      lean: "CurvatureVariance.evariance_passageTime_floorVertex_le"
+      module: "CurvatureVariance.Statements.Main.EvariancePassageTimeFloorVertexLe"
+      status: "proved"
+      note: "Assumption (W), and an expansion of the time constant of the form of (Curv) at a nonzero direction xi and a complementary linear hyperplane H, with constants of its own (AssumptionCAt); Var T(0, floor(n xi)) <= n^(1 - epsilon) for all large n, with epsilon and the threshold depending on the direction. Proved from the intermediate results of the proof of Theorem 1.1."
+    - source: "Fluctuation bounds for rotationally invariant first-passage percolation, Theorem 1.1"
+      lean: "IsotropicVariance.lintegral_exp_passageTime_le"
+      module: "IsotropicVariance.Statements.Main.LintegralExpPassageTimeLe"
+      status: "proved"
+      note: "The density psi(chi * W) of Gaussian white noise W: the time constant mu exists, and E exp(|T(0, x) - mu |x|| / (C |x|^((1 - epsilon)/2))) <= 2 for every point x with |x| >= 1, epsilon and C chosen before x."
+    - source: "Fluctuation bounds for rotationally invariant first-passage percolation, Assumption A"
+      lean: "IsotropicVariance.IsLocalDensity"
+      module: "IsotropicVariance.Statements.Assumption.IsLocalDensity"
+      status: "defined"
+      note: "Jointly measurable; determined by the noise in the closed unit ball around each point; between two positive constants; equivariant under the proper rigid motions (IsProperRigidMotion), the compositions of a rotation and a translation."
+    - source: "Fluctuation bounds for rotationally invariant first-passage percolation, Theorem 1.2, white noise"
+      lean: "IsotropicVariance.lintegral_exp_passageTime_le_of_isWhiteNoise"
+      module: "IsotropicVariance.Statements.Main.LintegralExpPassageTimeLeOfIsWhiteNoise"
+      status: "proved"
+      note: "Every density of white noise satisfying Assumption A, with the conclusion of Theorem 1.1."
+    - source: "Fluctuation bounds for rotationally invariant first-passage percolation, Theorem 1.2, Poisson process"
+      lean: "IsotropicVariance.lintegral_exp_passageTime_le_of_isPoissonProcess"
+      module: "IsotropicVariance.Statements.Main.LintegralExpPassageTimeLeOfIsPoissonProcess"
+      status: "proved"
+      note: "Every density of a homogeneous Poisson process of intensity lam > 0 satisfying Assumption A, with the conclusion of Theorem 1.1."
+    - source: "Fluctuation bounds for rotationally invariant first-passage percolation, the variance bound after Theorem 1.1, at the points t e_1"
+      lean: "IsotropicVariance.variance_passageTime_le"
+      module: "IsotropicVariance.Statements.Main.VariancePassageTimeLe"
+      status: "proved"
+      note: "Under the hypotheses of Theorem 1.1, Var T(0, t e_1) <= t^(1 - epsilon) for every t >= t_0."
+    - source: "Fluctuation bounds for rotationally invariant first-passage percolation, the variance bound after Theorem 1.1, at every point"
+      lean: "IsotropicVariance.variance_passageTime_le_norm"
+      module: "IsotropicVariance.Statements.Main.VariancePassageTimeLeNorm"
+      status: "proved"
+      note: "Under the hypotheses of Theorem 1.1, Var T(0, x) <= |x|^(1 - epsilon) for every point x with |x| >= r_0, epsilon and r_0 chosen before x."
+    - source: "Fluctuation bounds for rotationally invariant first-passage percolation, the variance bound for Theorem 1.2 with white noise, at the points t e_1"
+      lean: "IsotropicVariance.variance_passageTime_le_of_isWhiteNoise"
+      module: "IsotropicVariance.Statements.Main.VariancePassageTimeLeOfIsWhiteNoise"
+      status: "proved"
+      note: "Under Assumption A for white noise, Var T(0, t e_1) <= t^(1 - epsilon) for every t >= t_0."
+    - source: "Fluctuation bounds for rotationally invariant first-passage percolation, the variance bound for Theorem 1.2 with white noise, at every point"
+      lean: "IsotropicVariance.variance_passageTime_le_norm_of_isWhiteNoise"
+      module: "IsotropicVariance.Statements.Main.VariancePassageTimeLeNormOfIsWhiteNoise"
+      status: "proved"
+      note: "Var T(0, x) <= |x|^(1 - epsilon) for every point x with |x| >= r_0."
+    - source: "Fluctuation bounds for rotationally invariant first-passage percolation, the variance bound for Theorem 1.2 with the Poisson process, at the points t e_1"
+      lean: "IsotropicVariance.variance_passageTime_le_of_isPoissonProcess"
+      module: "IsotropicVariance.Statements.Main.VariancePassageTimeLeOfIsPoissonProcess"
+      status: "proved"
+      note: "Under Assumption A for the Poisson process, Var T(0, t e_1) <= t^(1 - epsilon) for every t >= t_0."
+    - source: "Fluctuation bounds for rotationally invariant first-passage percolation, the variance bound for Theorem 1.2 with the Poisson process, at every point"
+      lean: "IsotropicVariance.variance_passageTime_le_norm_of_isPoissonProcess"
+      module: "IsotropicVariance.Statements.Main.VariancePassageTimeLeNormOfIsPoissonProcess"
+      status: "proved"
+      note: "Var T(0, x) <= |x|^(1 - epsilon) for every point x with |x| >= r_0."
+    - source: "Mathlib-only restatement of the lattice paper's Theorem 1.1, with five theorems certifying its definitions"
+      lean: "LatticeVariance.lintegral_exp_passageTime_le"
+      module: "Audit.LatticeVariance.Challenge / Audit.LatticeVariance.Solution"
+      status: "comparator-checked"
+      note: "The Challenge imports only Mathlib and contains one intentional statement-level sorry per theorem; the time constant is defined as the explicit limit of E T(0, floor(nx))/n."
+    - source: "Mathlib-only restatement of the variance bound at the points floor(n xi) that follows from the lattice paper's Theorem 1.1, uniform in the direction"
+      lean: "LatticeVariance.variance_passageTime_floorVertex_le_uniform"
+      module: "Audit.LatticeVariance.Challenge / Audit.LatticeVariance.Solution"
+      status: "comparator-checked"
+      note: "Over the same definitions as Theorem 1.1, with epsilon and n_0 before xi."
+    - source: "Mathlib-only restatement of the continuum paper's Theorem 1.1, with the existence of white noise"
+      lean: "IsotropicMetric.lintegral_exp_passageTime_le"
+      module: "Audit.IsotropicMetric.Challenge / Audit.IsotropicMetric.Solution"
+      status: "comparator-checked"
+      note: "The Challenge imports only Mathlib and contains one intentional statement-level sorry per theorem; the time constant is given by its defining limit, which the theorem asserts to exist."
+    - source: "Mathlib-only restatement of the variance bound after the continuum paper's Theorem 1.1, at the points t e_1"
+      lean: "IsotropicMetric.variance_passageTime_le"
+      module: "Audit.IsotropicMetric.Challenge / Audit.IsotropicMetric.Solution"
+      status: "comparator-checked"
+      note: "Over the same definitions as Theorem 1.1."
+    - source: "Mathlib-only restatement of the variance bound after the continuum paper's Theorem 1.1, at every point"
+      lean: "IsotropicMetric.variance_passageTime_le_norm"
+      module: "Audit.IsotropicMetric.Challenge / Audit.IsotropicMetric.Solution"
+      status: "comparator-checked"
+      note: "Over the same definitions as Theorem 1.1, with epsilon and r_0 before x."
+    - source: "Mathlib-only restatement of the continuum paper's Theorem 1.2 for white noise, with the existence of white noise and Assumption A for the density of Theorem 1.1"
+      lean: "WhiteNoiseGeneral.lintegral_exp_passageTime_le_of_isWhiteNoise"
+      module: "Audit.WhiteNoiseGeneral.Challenge / Audit.WhiteNoiseGeneral.Solution"
+      status: "comparator-checked"
+      note: "The Challenge imports only Mathlib and contains one intentional statement-level sorry per theorem."
+    - source: "Mathlib-only restatement of the variance bound for the continuum paper's Theorem 1.2 with white noise, at the points t e_1"
+      lean: "WhiteNoiseGeneral.variance_passageTime_le_of_isWhiteNoise"
+      module: "Audit.WhiteNoiseGeneral.Challenge / Audit.WhiteNoiseGeneral.Solution"
+      status: "comparator-checked"
+      note: "Over the same definitions as Theorem 1.2 for white noise."
+    - source: "Mathlib-only restatement of the variance bound for the continuum paper's Theorem 1.2 with white noise, at every point"
+      lean: "WhiteNoiseGeneral.variance_passageTime_le_norm_of_isWhiteNoise"
+      module: "Audit.WhiteNoiseGeneral.Challenge / Audit.WhiteNoiseGeneral.Solution"
+      status: "comparator-checked"
+      note: "Over the same definitions as Theorem 1.2 for white noise, with epsilon and r_0 before x."
+    - source: "Mathlib-only restatement of the continuum paper's Theorem 1.2 for the Poisson process, with the existence of the Poisson process"
+      lean: "PoissonGeneral.lintegral_exp_passageTime_le_of_isPoissonProcess"
+      module: "Audit.PoissonGeneral.Challenge / Audit.PoissonGeneral.Solution"
+      status: "comparator-checked"
+      note: "The Challenge imports only Mathlib and contains one intentional statement-level sorry per theorem."
+    - source: "Mathlib-only restatement of the variance bound for the continuum paper's Theorem 1.2 with the Poisson process, at the points t e_1"
+      lean: "PoissonGeneral.variance_passageTime_le_of_isPoissonProcess"
+      module: "Audit.PoissonGeneral.Challenge / Audit.PoissonGeneral.Solution"
+      status: "comparator-checked"
+      note: "Over the same definitions as Theorem 1.2 for the Poisson process."
+    - source: "Mathlib-only restatement of the variance bound for the continuum paper's Theorem 1.2 with the Poisson process, at every point"
+      lean: "PoissonGeneral.variance_passageTime_le_norm_of_isPoissonProcess"
+      module: "Audit.PoissonGeneral.Challenge / Audit.PoissonGeneral.Solution"
+      status: "comparator-checked"
+      note: "Over the same definitions as Theorem 1.2 for the Poisson process, with epsilon and r_0 before x."
+
+acknowledgements: >-
+  Scott Armstrong was supported by the European Research Council (ERC) under
+  the European Union's Horizon Europe research and innovation programme,
+  grant agreement No. 101200828. Built on Lean 4, Mathlib and Lake; the
+  comparator challenges are checked with leanprover/comparator and the
+  independent kernel checkers bundled with the Lean toolchain.

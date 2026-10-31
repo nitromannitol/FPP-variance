@@ -1,0 +1,146 @@
+name: Build and verify
+
+# Builds both libraries and the comparator files, checks the Lean source
+# requirements, audits the axioms of every theorem that scripts/Axioms.lean
+# prints, and checks the metadata and the README. It runs on every push and
+# pull request to main, and by hand (workflow_dispatch). A run on main saves its
+# build cache; when it succeeds, the "Comparators" workflow starts and restores
+# that cache.
+"on":
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Only superseded pull-request runs are cancelled. A push to main never cancels
+# a build in progress: its saved progress is what the next run resumes from.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build and axiom audit
+    runs-on: ubuntu-24.04
+    # GitHub's hard maximum for a hosted job. A first run on an empty cache
+    # compiles both libraries and the comparator files from source (Mathlib
+    # comes from its cache): about 1 CPU-hour, estimated at under an hour on
+    # 4 vCPUs. If it runs out of time, a re-run resumes from the progress that
+    # this attempt saves.
+    timeout-minutes: 360
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The build needs more disk than a hosted runner has free at start. Only
+      # remove preinstalled, unused SDKs on disposable hosted runners, and fail
+      # at once if less than 20 GiB is available.
+      - name: Free runner disk space
+        run: |
+          set -Eeuo pipefail
+          # Only remove preinstalled, unused SDKs on disposable hosted runners.
+          if [[ "${RUNNER_ENVIRONMENT:-}" == github-hosted ]]; then
+            sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+            sudo docker image prune --all --force > /dev/null || true
+          fi
+          df -h .
+          available_kib="$(df -Pk . | awk 'NR==2 {print $4}')"
+          test "$available_kib" -ge 20971520
+
+      # Lake runs several compilations at once on a 16 GB runner. A swap file
+      # turns an out-of-memory kill into a slow step. It goes on /mnt, which has
+      # its own disk; without 20 GiB free there it is skipped, never taken from
+      # the build's disk.
+      - name: Add swap
+        run: |
+          set -Eeuo pipefail
+          free_kib="$( (df -Pk /mnt 2>/dev/null || true) | awk 'NR==2 {print $4}')"
+          free_kib="${free_kib:-0}"
+          if [[ "${RUNNER_ENVIRONMENT:-}" == github-hosted && "$free_kib" -ge 20971520 ]]; then
+            sudo fallocate -l 16G /mnt/ci-swap
+            sudo chmod 600 /mnt/ci-swap
+            sudo mkswap /mnt/ci-swap
+            sudo swapon /mnt/ci-swap
+          else
+            echo "No swap file added (/mnt has $((free_kib / 1048576)) GiB free)."
+          fi
+          free -h
+
+      - name: Check Lean source requirements
+        run: python3 scripts/check-lean-sources.py
+
+      # Install the toolchain from `lean-toolchain` and fetch the Mathlib cache
+      # (`lake exe cache get`). The action's own cache is off: it saves only
+      # after a successful build and uses one key for every workflow. The cache
+      # steps below save even when the build is interrupted.
+      - name: Set up Lean and Mathlib cache
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        with:
+          build: false
+          use-mathlib-cache: true
+          use-github-cache: false
+
+      # The key is unique to this attempt of this run, so it never matches and
+      # the most recent entry for the same commit is restored through
+      # `restore-keys` (this run's earlier attempt, if any), then the most
+      # recent entry of any commit. A re-run therefore resumes where the
+      # previous attempt stopped, and its own progress is saved under a new key.
+      # The Comparators workflow restores this run's entry by its exact key.
+      - name: Restore project build artifacts
+        id: cache-restore
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .lake/build
+          key: lake-build-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            lake-build-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}-
+            lake-build-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+
+      # No `sorry` and no warning in the libraries (CurvatureVariance/,
+      # IsotropicVariance/) or the comparator files (Audit/), except the
+      # intentional `sorry` of each theorem of a Challenge, which Lean reports as
+      # a warning: only those warnings, and only from Audit/*/Challenge.lean,
+      # are exempt.
+      #
+      # The step limit leaves the rest of the 360 minutes for the checkout,
+      # the toolchain and Mathlib cache, the axiom audit, and saving the cache,
+      # so that a first build that runs out of time still reaches the save step.
+      - name: Build
+        timeout-minutes: 300
+        run: |
+          set -o pipefail
+          lake build 2>&1 | tee build.log
+          if grep -E '^warning: (\./)?(CurvatureVariance|IsotropicVariance|Audit)' build.log \
+               | grep -vE '^warning: (\./)?Audit/[A-Za-z0-9_]+/Challenge\.lean:[0-9]+:[0-9]+: declaration uses .sorry.$'; then
+            echo "The build reported a warning other than a Challenge's intentional sorry."
+            exit 1
+          fi
+
+      # Elaborate scripts/Axioms.lean and check its `#print axioms` output:
+      # every listed theorem is reported and depends only on propext,
+      # Classical.choice and Quot.sound.
+      - name: Axiom audit
+        run: python3 scripts/check-axioms.py --log "$RUNNER_TEMP/axioms.log"
+
+      - name: Check metadata and documentation
+        run: python3 scripts/check-metadata.py
+
+      # Saved on success, failure and timeout alike, except for pull requests
+      # (their entries would crowd out main's in the 10 GB cache quota).
+      # Always saved, even when nothing was rebuilt: the Comparators workflow
+      # needs this run's exact entry.
+      - name: Save project build artifacts
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .lake/build
+          key: lake-build-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}

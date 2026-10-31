@@ -1,0 +1,59 @@
+/-
+Copyright (c) 2026 Scott Armstrong and Ahmed Bou-Rabee. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Scott Armstrong, Ahmed Bou-Rabee
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.InnerProductSpace.ProdL2
+public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Analysis.Distribution.Distribution
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
+public import Mathlib.Topology.Order.ProjIcc
+public import Mathlib.MeasureTheory.Measure.Stieltjes
+public import Mathlib.MeasureTheory.Measure.GiryMonad
+public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.Probability.HasLaw
+public import Mathlib.Probability.Independence.Basic
+public import Mathlib.Probability.Distributions.Gaussian.Real
+public import Mathlib.Probability.Distributions.Poisson.Basic
+public import Mathlib.Probability.Moments.Variance
+public import Mathlib.MeasureTheory.Constructions.Pi
+public import Mathlib.Probability.ProductMeasure
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import IsotropicVariance.Statements.Configurations.WhiteNoiseConfig
+public import IsotropicVariance.Statements.Configurations.WhiteNoiseConfigInstMeasurableSpace
+
+/-!
+# `IsotropicVariance.IsWhiteNoise`
+
+One declaration of the statements of this formalization (`IsotropicVariance.Statements`): the
+definitions, the results cited from the literature and the main theorems, one per file.
+
+This file holds a definition.
+-/
+
+@[expose] public section
+
+open MeasureTheory ProbabilityTheory Filter Set TopologicalSpace
+open scoped NNReal ENNReal Topology Distributions
+
+namespace IsotropicVariance
+
+/-- `W` is Gaussian white noise on `E` under `P` (the introduction and Assumption `ass:local`): a
+measurable random distribution such that `W(φ)` is centered Gaussian with variance `∫ φ²` for
+every test function `φ`. Since `W` is linear in `φ`, this fixes every finite-dimensional law: the
+covariance of `W(φ)` and `W(ψ)` is `∫ φψ`. -/
+def IsWhiteNoise {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasureSpace E]
+    {Ω : Type*} [MeasurableSpace Ω] (W : Ω → WhiteNoiseConfig E) (P : Measure Ω) : Prop :=
+  Measurable W ∧ ∀ φ : 𝓓((⊤ : Opens E), ℝ),
+    HasLaw (fun ω => W ω φ) (gaussianReal 0 (∫ x, φ x ^ 2).toNNReal) P
+
+end IsotropicVariance

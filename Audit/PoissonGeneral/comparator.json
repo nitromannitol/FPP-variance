@@ -1,0 +1,12 @@
+{
+  "challenge_module": "Audit.PoissonGeneral.Challenge",
+  "solution_module": "Audit.PoissonGeneral.Solution",
+  "theorem_names": [
+    "PoissonGeneral.lintegral_exp_passageTime_le_of_isPoissonProcess",
+    "PoissonGeneral.variance_passageTime_le_of_isPoissonProcess",
+    "PoissonGeneral.variance_passageTime_le_norm_of_isPoissonProcess",
+    "PoissonGeneral.exists_isPoissonProcess"
+  ],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": true
+}

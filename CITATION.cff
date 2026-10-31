@@ -1,0 +1,69 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite it as below, together with the papers it formalizes."
+title: "FPPVariance: a Lean 4 formalization of fluctuation bounds for lattice and rotationally invariant first-passage percolation"
+abstract: >-
+  A machine-checked Lean 4 / Mathlib formalization of two papers of S.
+  Armstrong and A. Bou-Rabee. For first-passage percolation on Z^d, d >= 2,
+  with independent, identically distributed weights whose law has an
+  exponential moment and mass at zero below the critical probability of bond
+  percolation, let xi be a unit vector in R^d, rational or not, at which the
+  time constant mu has a positive definite quadratic expansion with a power
+  remainder on the orthogonal hyperplane. Then there are epsilon > 0 and C such
+  that E exp(|T(0, x) - mu(x)| / (C |x|^((1 - epsilon)/2))) <= 2 for every
+  nonzero lattice point x within distance |x|^(3/4) of the ray through xi;
+  epsilon and C depend only on the dimension, the law of the weights and the
+  constants of this expansion, not on the direction ("Curvature and variance in
+  lattice first-passage percolation", Theorem 1.1). The variance bounds that
+  follow, Var T(0, x) <= 2 C^2 |x|^(1 - epsilon) for these x and
+  Var T(0, floor(n xi)) <= n^(1 - epsilon) for every sufficiently large integer
+  n, uniformly in the direction, are proved as well. For the passage time T of a
+  rotationally invariant random metric on R^d, d >= 2, whose density is a
+  bounded local function of Gaussian white noise or of a homogeneous Poisson
+  process and is equivariant under rotations and translations, with time
+  constant mu, there are epsilon > 0 and C such that
+  E exp(|T(0, x) - mu |x|| / (C |x|^((1 - epsilon)/2))) <= 2 for every point x
+  with |x| >= 1 ("Fluctuation bounds for rotationally invariant first-passage
+  percolation", Theorems 1.1 and 1.2); the variance bounds that follow,
+  Var T(0, t e_1) <= t^(1 - epsilon) for every sufficiently large t and
+  Var T(0, x) <= |x|^(1 - epsilon) for every point x with |x| sufficiently
+  large, are proved as well. Every result of the literature that the proofs use
+  is stated and proved. The proofs use only the standard axioms.
+type: software
+date-released: 2026-10-31
+authors:
+  - family-names: Armstrong
+    given-names: Scott
+    affiliation: "CNRS & Laboratoire Jacques-Louis Lions, Sorbonne Université and Courant Institute of Mathematical Sciences, New York University"
+  - family-names: Bou-Rabee
+    given-names: Ahmed
+    affiliation: "Department of Mathematics, University of Pennsylvania"
+keywords:
+  - Lean
+  - mathlib
+  - formal verification
+  - first-passage percolation
+  - random metrics
+  - fluctuation bounds
+  - variance bounds
+  - concentration of measure
+license: Apache-2.0
+repository-code: "https://github.com/nitromannitol/FPP-variance"
+references:
+  - type: article
+    title: "Curvature and variance in lattice first-passage percolation"
+    authors:
+      - family-names: Armstrong
+        given-names: Scott
+      - family-names: Bou-Rabee
+        given-names: Ahmed
+    year: 2026
+    notes: "Included in this repository as papers/CurvatureVariance.pdf, for reference: the version of October 31, 2026 (18 pages). The paper is © the authors and is not covered by the Apache-2.0 license of the code."
+  - type: article
+    title: "Fluctuation bounds for rotationally invariant first-passage percolation"
+    authors:
+      - family-names: Armstrong
+        given-names: Scott
+      - family-names: Bou-Rabee
+        given-names: Ahmed
+    year: 2026
+    notes: "Included in this repository as papers/IsotropicVariance.pdf, for reference: the version submitted to arXiv on October 30, 2026 (19 pages). The paper is © the authors and is not covered by the Apache-2.0 license of the code."

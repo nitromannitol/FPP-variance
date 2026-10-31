@@ -1,0 +1,137 @@
+/-
+Copyright (c) 2026 Scott Armstrong and Ahmed Bou-Rabee. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Scott Armstrong, Ahmed Bou-Rabee
+-/
+module
+
+import CurvatureVariance.Statements.Main.LintegralExpPassageTimeLe
+import CurvatureVariance.Statements.Main.EvariancePassageTimeFloorVertexLeUniform
+import CurvatureVariance.Statements.Main.EvariancePassageTimeFloorVertexLe
+import CurvatureVariance.Paper.Closing.Main
+import CurvatureVariance.Statements.Inputs.AeExistsIsPathWalkCostEqPassageTime
+import CurvatureVariance.Statements.Inputs.BlmProposition1
+import CurvatureVariance.Statements.Inputs.BondCriticalProbBounds
+import CurvatureVariance.Statements.Inputs.ExistsIsOsIntegral
+import CurvatureVariance.Statements.Inputs.ExistsTendstoPassageTimeDiv
+import CurvatureVariance.Statements.Inputs.IntegralPassageTimeLeTimeConstantAdd
+import CurvatureVariance.Statements.Inputs.IsOsMeasureGeLe
+import CurvatureVariance.Statements.Inputs.IsOsMul
+import CurvatureVariance.Statements.Inputs.IsOsOfMeasureGeLe
+import CurvatureVariance.Statements.Inputs.MeasureAbsPassageTimeSubIntegralLe
+import CurvatureVariance.Statements.Inputs.MeasureExistsIsPathWalkCostLtLe
+import CurvatureVariance.Statements.Inputs.MeasureReachableSphereLe
+import CurvatureVariance.Statements.Inputs.PosIffForallPosOfIsLatticeSymmetric
+import CurvatureVariance.Statements.Inputs.TimeConstantPos
+import CurvatureVariance.Statements.Inputs.VarianceMulLogLeOfEntropyLe
+import CurvatureVariance.Statements.Companions.BondCriticalProbPos
+import CurvatureVariance.Statements.Companions.ExistsIsIIDWeights
+import CurvatureVariance.Statements.Companions.ExistsIsTimeConstant
+import CurvatureVariance.Statements.Companions.IsIIDWeightsUnique
+import CurvatureVariance.Statements.Companions.IsTimeConstantUnique
+import IsotropicVariance.Statements.Main.LintegralExpPassageTimeLe
+import IsotropicVariance.Statements.Main.LintegralExpPassageTimeLeOfIsPoissonProcess
+import IsotropicVariance.Statements.Main.LintegralExpPassageTimeLeOfIsWhiteNoise
+import IsotropicVariance.Statements.Main.VariancePassageTimeLe
+import IsotropicVariance.Statements.Main.VariancePassageTimeLeOfIsPoissonProcess
+import IsotropicVariance.Statements.Main.VariancePassageTimeLeOfIsWhiteNoise
+import IsotropicVariance.Statements.Main.VariancePassageTimeLeNorm
+import IsotropicVariance.Statements.Main.VariancePassageTimeLeNormOfIsPoissonProcess
+import IsotropicVariance.Statements.Main.VariancePassageTimeLeNormOfIsWhiteNoise
+import IsotropicVariance.Statements.Cited.BlmCorollary3
+import IsotropicVariance.Statements.Cited.BlmProposition1
+import IsotropicVariance.Statements.Cited.BlmTheorem7
+import IsotropicVariance.Statements.Cited.HnLemma42
+import IsotropicVariance.Statements.Cited.IsOsIntegralOfOneLe
+import IsotropicVariance.Statements.Cited.IsOsMeasureGeLe
+import IsotropicVariance.Statements.Cited.IsOsOfMeasureGeLe
+import IsotropicVariance.Statements.Cited.VarianceMulLogLeOfEntropyLe
+import IsotropicVariance.Statements.Companions.ExistsIsPoissonProcess
+import IsotropicVariance.Statements.Curves.RectifiableCurveContinuousCumulativeLength
+import IsotropicVariance.Statements.Curves.RectifiableCurveMonotoneCumulativeLength
+import Audit.LatticeVariance.Solution
+import Audit.IsotropicMetric.Solution
+import Audit.WhiteNoiseGeneral.Solution
+import Audit.PoissonGeneral.Solution
+import IsotropicVariance.Statements.Companions.ExistsIsWhiteNoise
+
+/-!
+# Axioms of the main results
+
+Prints the axioms of the main theorems of both papers, of the cited results proved in this
+repository, of the existence and uniqueness theorems for the notions the main theorems use (all
+in the `Statements` directories of the two libraries), of the variance bound stated after the
+main theorem of the lattice paper and of its lemma `lem:slabs` as stated, and of the theorems of
+the comparator challenges as proved in their solutions. The axiom check of this repository
+elaborates this file with `lake env lean` and checks that every theorem depends on no axioms
+beyond `propext`, `Classical.choice` and `Quot.sound`.
+-/
+
+#print axioms CurvatureVariance.lintegral_exp_passageTime_le
+#print axioms CurvatureVariance.evariance_passageTime_floorVertex_le_uniform
+#print axioms CurvatureVariance.evariance_passageTime_floorVertex_le
+#print axioms CurvatureVariance.Paper.Closing.variance_passageTime_le
+#print axioms CurvatureVariance.Paper.Closing.slabsBounds_holds
+#print axioms CurvatureVariance.ae_exists_isPath_walkCost_eq_passageTime
+#print axioms CurvatureVariance.blm_proposition1
+#print axioms CurvatureVariance.bondCriticalProb_bounds
+#print axioms CurvatureVariance.exists_isOs_integral
+#print axioms CurvatureVariance.exists_tendsto_passageTime_div
+#print axioms CurvatureVariance.integral_passageTime_le_timeConstant_add
+#print axioms CurvatureVariance.IsOs.measure_ge_le
+#print axioms CurvatureVariance.IsOs.mul
+#print axioms CurvatureVariance.isOs_of_measure_ge_le
+#print axioms CurvatureVariance.measure_abs_passageTime_sub_integral_le
+#print axioms CurvatureVariance.measure_exists_isPath_walkCost_lt_le
+#print axioms CurvatureVariance.measure_reachable_sphere_le
+#print axioms CurvatureVariance.pos_iff_forall_pos_of_isLatticeSymmetric
+#print axioms CurvatureVariance.timeConstant_pos
+#print axioms CurvatureVariance.variance_mul_log_le_of_entropy_le
+#print axioms CurvatureVariance.bondCriticalProb_pos
+#print axioms CurvatureVariance.exists_isIIDWeights
+#print axioms CurvatureVariance.exists_isTimeConstant
+#print axioms CurvatureVariance.IsIIDWeights.unique
+#print axioms CurvatureVariance.IsTimeConstant.unique
+
+#print axioms IsotropicVariance.lintegral_exp_passageTime_le
+#print axioms IsotropicVariance.lintegral_exp_passageTime_le_of_isPoissonProcess
+#print axioms IsotropicVariance.lintegral_exp_passageTime_le_of_isWhiteNoise
+#print axioms IsotropicVariance.variance_passageTime_le
+#print axioms IsotropicVariance.variance_passageTime_le_of_isPoissonProcess
+#print axioms IsotropicVariance.variance_passageTime_le_of_isWhiteNoise
+#print axioms IsotropicVariance.variance_passageTime_le_norm
+#print axioms IsotropicVariance.variance_passageTime_le_norm_of_isPoissonProcess
+#print axioms IsotropicVariance.variance_passageTime_le_norm_of_isWhiteNoise
+#print axioms IsotropicVariance.Cited.blm_corollary3
+#print axioms IsotropicVariance.Cited.blm_proposition1
+#print axioms IsotropicVariance.Cited.blm_theorem7
+#print axioms IsotropicVariance.Cited.hn_lemma4_2
+#print axioms IsotropicVariance.Cited.isOs_integral_of_one_le
+#print axioms IsotropicVariance.Cited.IsOs.measure_ge_le
+#print axioms IsotropicVariance.Cited.isOs_of_measure_ge_le
+#print axioms IsotropicVariance.Cited.variance_mul_log_le_of_entropy_le
+#print axioms IsotropicVariance.exists_isPoissonProcess
+#print axioms IsotropicVariance.RectifiableCurve.continuous_cumulativeLength
+#print axioms IsotropicVariance.RectifiableCurve.monotone_cumulativeLength
+#print axioms IsotropicVariance.exists_isWhiteNoise
+
+#print axioms LatticeVariance.lintegral_exp_passageTime_le
+#print axioms LatticeVariance.variance_passageTime_floorVertex_le_uniform
+#print axioms LatticeVariance.weightLaw_iid
+#print axioms LatticeVariance.eq_weightLaw
+#print axioms LatticeVariance.tendsto_integral_passageTime_div
+#print axioms LatticeVariance.timeConstant_isNorm
+#print axioms LatticeVariance.ae_tendsto_passageTime_div
+#print axioms IsotropicMetric.lintegral_exp_passageTime_le
+#print axioms IsotropicMetric.variance_passageTime_le
+#print axioms IsotropicMetric.variance_passageTime_le_norm
+#print axioms IsotropicMetric.exists_isWhiteNoise
+#print axioms WhiteNoiseGeneral.lintegral_exp_passageTime_le_of_isWhiteNoise
+#print axioms WhiteNoiseGeneral.variance_passageTime_le_of_isWhiteNoise
+#print axioms WhiteNoiseGeneral.variance_passageTime_le_norm_of_isWhiteNoise
+#print axioms WhiteNoiseGeneral.exists_isWhiteNoise
+#print axioms WhiteNoiseGeneral.isLocalDensity_convolutionDensity
+#print axioms PoissonGeneral.lintegral_exp_passageTime_le_of_isPoissonProcess
+#print axioms PoissonGeneral.variance_passageTime_le_of_isPoissonProcess
+#print axioms PoissonGeneral.variance_passageTime_le_norm_of_isPoissonProcess
+#print axioms PoissonGeneral.exists_isPoissonProcess

@@ -1,0 +1,12 @@
+{
+  "challenge_module": "Audit.IsotropicMetric.Challenge",
+  "solution_module": "Audit.IsotropicMetric.Solution",
+  "theorem_names": [
+    "IsotropicMetric.lintegral_exp_passageTime_le",
+    "IsotropicMetric.variance_passageTime_le",
+    "IsotropicMetric.variance_passageTime_le_norm",
+    "IsotropicMetric.exists_isWhiteNoise"
+  ],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": true
+}

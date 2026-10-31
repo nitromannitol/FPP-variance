@@ -1,0 +1,8 @@
+# Lake build directory, dependency checkouts and Lean build outputs
+/.lake/
+*.olean
+*.ilean
+
+# Python bytecode of the check scripts
+__pycache__/
+*.pyc

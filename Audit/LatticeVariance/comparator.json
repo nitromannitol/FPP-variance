@@ -1,0 +1,19 @@
+{
+  "challenge_module": "Audit.LatticeVariance.Challenge",
+  "solution_module": "Audit.LatticeVariance.Solution",
+  "theorem_names": [
+    "LatticeVariance.lintegral_exp_passageTime_le",
+    "LatticeVariance.variance_passageTime_floorVertex_le_uniform",
+    "LatticeVariance.weightLaw_iid",
+    "LatticeVariance.eq_weightLaw",
+    "LatticeVariance.tendsto_integral_passageTime_div",
+    "LatticeVariance.timeConstant_isNorm",
+    "LatticeVariance.ae_tendsto_passageTime_div"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}

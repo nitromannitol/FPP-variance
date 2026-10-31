@@ -1,0 +1,13 @@
+{
+  "challenge_module": "Audit.WhiteNoiseGeneral.Challenge",
+  "solution_module": "Audit.WhiteNoiseGeneral.Solution",
+  "theorem_names": [
+    "WhiteNoiseGeneral.lintegral_exp_passageTime_le_of_isWhiteNoise",
+    "WhiteNoiseGeneral.variance_passageTime_le_of_isWhiteNoise",
+    "WhiteNoiseGeneral.variance_passageTime_le_norm_of_isWhiteNoise",
+    "WhiteNoiseGeneral.exists_isWhiteNoise",
+    "WhiteNoiseGeneral.isLocalDensity_convolutionDensity"
+  ],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": true
+}
